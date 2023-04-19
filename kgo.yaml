@@ -1,0 +1,10 @@
+debug: true
+
+http:
+  listen: :2323
+  session: 3f330eeb35df4195b531b102c31ed86c
+
+db:
+  psql:
+    url: "postgres://postgres:Ll8028ghz@47.101.206.135/morning?sslmode=disable"
+    debug: true

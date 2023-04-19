@@ -1,0 +1,1439 @@
+openapi: 3.0.2
+info:
+  title: "幼儿园后台接口文档"
+  description: "幼儿园后台接口文档"
+  version: "1.0.0"
+  contact:
+    name: "Wiky Lyu"
+    email: "wiiiky@yeah.net"
+
+tags:
+  - name: "帐号"
+    description: "帐号相关接口，包括登录/注销"
+  - name: "幼儿园"
+    description: "幼儿园管理相关接口，包括创建班级老师等"
+  - name: "健康"
+    description: "健康管理，包括晨检和体检"
+
+servers:
+  - description: 正式环境
+    url: http://kg.ykwell.cn/api/teacher
+  # - url: "http://127.0.0.1:2323/api/teacher"
+
+paths:
+  /login:
+    put:
+      tags:
+        - "帐号"
+      summary: "登录"
+      description: "帐号登录"
+      operationId: "put.login"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+  /logout:
+    put:
+      tags:
+        - "帐号"
+      security:
+        - cookieAuth: []
+      summary: "注销"
+      description: "注销登录"
+      operationId: "put.logout"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+  /self:
+    get:
+      tags:
+        - "帐号"
+      security:
+        - cookieAuth: []
+      summary: "获取当前用户信息"
+      description: "获取当前登录的用户信息"
+      operationId: "get.self"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetSelfResponse"
+    put:
+      tags:
+        - "帐号"
+      security:
+        - cookieAuth: []
+      summary: "更新用户信息"
+      description: "更新当前用户信息"
+      operationId: "put.self"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSelfRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetSelfResponse"
+  /password:
+    put:
+      tags:
+        - "帐号"
+      security:
+        - cookieAuth: []
+      summary: "修改密码"
+      description: "修改当前账号密码"
+      operationId: "put.password"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSelfPasswordRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetSelfResponse"
+  /classes:
+    get:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "获取班级列表"
+      description: "获取班级列表分页"
+      operationId: "get.classes"
+      parameters:
+        - in: "query"
+          name: "query"
+          description: "关键字"
+          schema:
+            type: "string"
+        - in: "query"
+          name: "page"
+          description: "分页"
+          schema:
+            type: "integer"
+          required: false
+        - in: "query"
+          name: "page_size"
+          description: "每页数"
+          schema:
+            type: "integer"
+          required: false
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FindClassesResponse"
+    post:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "批量创建班级"
+      description: "批量创建班级"
+      operationId: "post.classes"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClassLoadRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+  /class:
+    post:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "创建班级"
+      description: "创建班级，只有园长能创建"
+      operationId: "post.class"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClassRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateClassResponse"
+  /class/{id}:
+    get:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "获取班级详情"
+      description: "获取单个班级的详细信息"
+      operationId: "get.class"
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          schema:
+            type: "integer"
+          description: "班级ID"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetClassResponse"
+    put:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "编辑班级"
+      description: "编辑班级信息，只有园长可以编辑"
+      operationId: "put.class"
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          schema:
+            type: "integer"
+          description: "班级ID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClassRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateClassResponse"
+  /class/load/template:
+    get:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "下载班级模板"
+      description: "下载班级模板，.xlsx格式"
+      operationId: "get.class.load.template"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/vnd.ms-excel:
+              schema:
+                type: string
+                format: binary
+  /class/load:
+    post:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "解析XLSX文件，获取班级信息"
+      description: "解析XLSX文件，获取班级信息"
+      operationId: "post.class.load"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoadClassesResponse"
+  /teacher/load/template:
+    get:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "下载老师模板"
+      description: "下载老师模板，.xlsx格式"
+      operationId: "get.teacher.load.template"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/vnd.ms-excel:
+              schema:
+                type: string
+                format: binary
+  /teacher/load:
+    post:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "解析XLSX文件，获取老师信息"
+      description: "解析XLSX文件，获取老师信息"
+      operationId: "post.teacher.load"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoadTeachersResponse"
+  /teachers:
+    get:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "获取老师列表"
+      description: "获取老师列表分页"
+      operationId: "get.teachers"
+      parameters:
+        - in: "query"
+          name: "query"
+          description: "关键字"
+          schema:
+            type: "string"
+        - in: "query"
+          name: "class_id"
+          description: "班级ID"
+          schema:
+            type: "integer"
+          required: false
+        - in: "query"
+          name: "page"
+          description: "分页"
+          schema:
+            type: "integer"
+          required: false
+        - in: "query"
+          name: "page_size"
+          description: "每页数"
+          schema:
+            type: "integer"
+          required: false
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FindTeachersResponse"
+    post:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "批量创建老师"
+      description: "批量创建老师"
+      operationId: "post.teachers"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTeacherLoadRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+  /teacher:
+    post:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "创建老师"
+      description: "创建老师，只有园长能创建"
+      operationId: "post.teacher"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTeacherRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateTeacherResponse"
+  /teacher/{id}:
+    put:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "更新老师"
+      description: "更新老师，只有园长能编辑"
+      operationId: "put.teacher"
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "integer"
+          description: "老师ID"
+          example: 10
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTeacherRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateTeacherResponse"
+    delete:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "删除老师"
+      description: "删除，只有园长能编辑"
+      operationId: "delete.teacher"
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "integer"
+          description: "老师ID"
+          example: 10
+          required: true
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+  /students:
+    get:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "获取学生列表"
+      description: "获取学生列表分页"
+      operationId: "get.students"
+      parameters:
+        - in: "query"
+          name: "query"
+          description: "关键字"
+          schema:
+            type: "string"
+        - in: "query"
+          name: "class_id"
+          description: "班级ID"
+          schema:
+            type: "integer"
+          required: false
+        - in: "query"
+          name: "gender"
+          description: "性别"
+          schema:
+            type: "string"
+          required: false
+        - in: "query"
+          name: "page"
+          description: "分页"
+          schema:
+            type: "integer"
+          required: false
+        - in: "query"
+          name: "page_size"
+          description: "每页数"
+          schema:
+            type: "integer"
+          required: false
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FindStudentsResponse"
+    post:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "批量创建学生"
+      description: "批量创建学生"
+      operationId: "post.students"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentLoadRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+  /student:
+    post:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "创建学生"
+      description: "创建学生"
+      operationId: "post.student"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentResponse"
+  /student/{id}:
+    put:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "更新学生"
+      description: "更新学生信息"
+      operationId: "put.student"
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "integer"
+          description: "学生ID"
+          example: 10
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentResponse"
+    delete:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "删除学生"
+      description: "删除学生"
+      operationId: "delete.student"
+      parameters:
+        - in: "path"
+          name: "id"
+          schema:
+            type: "integer"
+          description: "学生ID"
+          example: 10
+          required: true
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BaseResponse"
+  /student/load/template:
+    get:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "下载学生模板"
+      description: "下载学生模板，.xlsx格式"
+      operationId: "get.student.load.template"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/vnd.ms-excel:
+              schema:
+                type: string
+                format: binary
+  /student/load:
+    post:
+      tags:
+        - "幼儿园"
+      security:
+        - cookieAuth: []
+      summary: "解析XLSX文件，获取学生信息"
+      description: "解析XLSX文件，获取学生信息"
+      operationId: "post.student.load"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoadStudentsResponse"
+  /student/morning/checks:
+    get:
+      tags:
+        - "健康"
+      security:
+        - cookieAuth: []
+      summary: "获取晨检记录"
+      description: "获取晨检记录"
+      operationId: "get.student.morning.checks"
+      parameters:
+        - in: "query"
+          name: "query"
+          description: "关键字搜索，学生姓名"
+          example: ""
+          required: false
+          schema:
+            type: "string"
+        - in: "query"
+          name: "class_id"
+          description: "班级ID"
+          example: 1
+          required: false
+          schema:
+            type: "integer"
+        - in: "query"
+          name: "student_id"
+          description: "学生ID"
+          example: 0
+          required: false
+          schema:
+            type: "integer"
+        - in: "query"
+          name: "temperature_filters"
+          description: "体温状态"
+          example: []
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: "string"
+              example: "normal"
+        - in: "query"
+          name: "start_time"
+          description: "开始日期"
+          example: ""
+          required: false
+          schema:
+            type: "string"
+        - in: "query"
+          name: "end_time"
+          description: "结束日期"
+          example: ""
+          required: false
+          schema:
+            type: "string"
+        - in: "query"
+          name: "page"
+          example: 1
+          schema:
+            type: "integer"
+        - in: "query"
+          name: "page_size"
+          example: 10
+          schema:
+            type: "integer"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FindStudentMorningChecksResponse"
+  /student/medical/examinations:
+    get:
+      tags:
+        - "健康"
+      security:
+        - cookieAuth: []
+      summary: "获取体检记录"
+      description: "获取体检记录"
+      operationId: "get.student.medical.examinations"
+      parameters:
+        - in: "query"
+          name: "query"
+          description: "关键字搜索，学生姓名"
+          example: ""
+          required: false
+          schema:
+            type: "string"
+        - in: "query"
+          name: "class_id"
+          description: "班级ID"
+          example: 1
+          required: false
+          schema:
+            type: "integer"
+        - in: "query"
+          name: "student_id"
+          description: "学生ID"
+          example: 1
+          required: false
+          schema:
+            type: "integer"
+        - in: "query"
+          name: "height_filters"
+          description: "身高状态"
+          example: []
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: "string"
+              example: "normal"
+        - in: "query"
+          name: "weight_filters"
+          description: "体重状态"
+          example: []
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: "string"
+              example: "normal"
+        - in: "query"
+          name: "hemoglobin_filters"
+          description: "血红蛋白状态"
+          example: []
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: "string"
+              example: "normal"
+        - in: "query"
+          name: "sight_filters"
+          description: "视力状态"
+          example: []
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: "string"
+              example: "normal"
+        - in: "query"
+          name: "alt_filters"
+          description: "ALT状态"
+          example: []
+          required: false
+          schema:
+            type: "array"
+            items:
+              type: "string"
+              example: "normal"
+        - in: "query"
+          name: "start_time"
+          description: "开始日期"
+          example: ""
+          required: false
+          schema:
+            type: "string"
+        - in: "query"
+          name: "end_time"
+          description: "结束日期"
+          example: ""
+          required: false
+          schema:
+            type: "string"
+        - in: "query"
+          name: "page"
+          example: 1
+          schema:
+            type: "integer"
+        - in: "query"
+          name: "page_size"
+          example: 10
+          schema:
+            type: "integer"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FindStudentMedicalExaminationsResponse"
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: adminuser
+  schemas:
+    BaseResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          description: "状态，0表示成功，非0表示出错，具体出错根据接口而异"
+          example: 0
+        data:
+          type: "object"
+    BaseModel:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+          description: "主键ID"
+          example: 1
+        updated_at:
+          type: "string"
+          format: "date-time"
+          example: "2020-10-20 10:18:43.91541+08"
+          description: "更新时间"
+        created_at:
+          type: "string"
+          format: "date-time"
+          example: "2020-10-20 10:18:43.91541+08"
+          description: "创建时间"
+        created_by:
+          type: "number"
+          example: 1
+          description: "创建人"
+    Class:
+      allOf:
+        - $ref: "#/components/schemas/BaseModel"
+        - type: "object"
+          properties:
+            name:
+              type: "string"
+              example: "A班"
+              description: "班级名"
+            remark:
+              type: "string"
+              example: "备注信息"
+            number_of_student:
+              type: "integer"
+              example: 10
+              description: "学生数"
+            number_of_teacher:
+              type: "integer"
+              example: 2
+              description: "老师数"
+            kindergarten:
+              $ref: "#/components/schemas/Kindergarten"
+    Teacher:
+      allOf:
+        - $ref: "#/components/schemas/BaseModel"
+        - type: "object"
+          properties:
+            username:
+              type: "string"
+              example: "test111"
+            name:
+              type: "string"
+              example: "测试帐号"
+            phone:
+              type: "string"
+              example: ""
+              description: "手机号"
+            role:
+              type: "string"
+              example: "manager"
+              enum:
+                - "manager"
+                - "teacher"
+              description: "角色"
+            gender:
+              type: "string"
+              example: "female"
+              enum:
+                - "male"
+                - "female"
+              description: "性别"
+            kindergarten:
+              $ref: "#/components/schemas/Kindergarten"
+            class:
+              $ref: "#/components/schemas/Class"
+    LoginRequest:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          example: "xiaoming"
+          description: "登录用户名"
+        password:
+          type: "string"
+          example: "abc1234556"
+          description: "密码"
+    LoginResponse:
+      description: "10001-用户不存在，10002-密码错误"
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+    GetSelfResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              $ref: "#/components/schemas/Teacher"
+    Kindergarten:
+      allOf:
+        - $ref: "#/components/schemas/BaseModel"
+        - type: "object"
+          properties:
+            name:
+              type: "string"
+              example: "测试幼儿园"
+              description: "幼儿园名"
+            remark:
+              type: "string"
+              example: "这是一个测试幼儿园"
+              description: "幼儿园备注"
+    UpdateSelfRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          example: "小明"
+          description: "姓名"
+        phone:
+          type: "string"
+          example: "1777777777"
+          description: "手机号"
+        gender:
+          type: "string"
+          example: "female"
+          enum:
+            - "male"
+            - "female"
+          description: "性别"
+    UpdateSelfPasswordRequest:
+      type: "object"
+      properties:
+        old:
+          type: "string"
+          example: "12345678"
+          description: "原密码"
+        new:
+          type: "string"
+          example: "87654321"
+          description: "新密码"
+    Pagination:
+      type: "object"
+      properties:
+        page:
+          type: "integer"
+          example: 1
+        page_size:
+          type: "integer"
+          example: 10
+        total:
+          type: "integer"
+          example: 100
+    FindClassesResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              allOf:
+                - $ref: "#/components/schemas/Pagination"
+                - type: "object"
+                  properties:
+                    list:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/Class"
+    FindTeachersResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              allOf:
+                - $ref: "#/components/schemas/Pagination"
+                - type: "object"
+                  properties:
+                    list:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/Teacher"
+    CreateClassRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          example: "A班"
+          description: "班级名"
+        remark:
+          type: "string"
+          example: ""
+          description: "备注信息"
+    CreateClassResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              $ref: "#/components/schemas/Class"
+    CreateTeacherRequest:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          description: "用户名，至少六位"
+          example: "abc123"
+        password:
+          type: "string"
+          description: "密码，至少八位"
+          example: "12345678"
+        name:
+          type: "string"
+          description: "姓名"
+          example: "小明"
+        phone:
+          type: "string"
+          description: "手机号"
+          example: "17777777"
+        gender:
+          type: "string"
+          description: "性别"
+          enum:
+            - "male"
+            - "female"
+          example: "female"
+        class_id:
+          type: "integer"
+          description: "班级ID"
+          example: 11
+    CreateTeacherResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              $ref: "#/components/schemas/Teacher"
+    GetClassResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              $ref: "#/components/schemas/Class"
+    UpdateTeacherRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          description: "姓名"
+          example: "小明"
+        phone:
+          type: "string"
+          description: "手机号"
+          example: "17777777"
+        gender:
+          type: "string"
+          description: "性别"
+          enum:
+            - "male"
+            - "female"
+          example: "female"
+        class_id:
+          type: "integer"
+          description: "班级ID"
+          example: 11
+    Student:
+      allOf:
+        - $ref: "#/components/schemas/BaseModel"
+        - type: "object"
+          properties:
+            name:
+              type: "string"
+              example: "小明"
+              description: "学生名"
+            remark:
+              type: "string"
+              example: ""
+              description: "备注"
+            gender:
+              type: "string"
+              example: "female"
+              description: "性别"
+            device:
+              type: "string"
+              example: "AC-DF-GH-DS-AA"
+              description: "设备ID"
+            kindergarten:
+              $ref: "#/components/schemas/Kindergarten"
+            class:
+              $ref: "#/components/schemas/Class"
+    FindStudentsResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              allOf:
+                - $ref: "#/components/schemas/Pagination"
+                - type: "object"
+                  properties:
+                    list:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/Student"
+    CreateStudentRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          example: "小明"
+          description: "学生名"
+        remark:
+          type: "string"
+          example: ""
+          description: "备注"
+        gender:
+          type: "string"
+          example: "female"
+          description: "性别"
+        device:
+          type: "string"
+          example: "AC-DF-GH-DS-AA"
+          description: "设备ID"
+        class_id:
+          type: "integer"
+          example: 2
+          description: "班级ID"
+    CreateStudentResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              $ref: "#/components/schemas/Student"
+    StudentMorningCheck:
+      allOf:
+        - $ref: "#/components/schemas/BaseModel"
+        - type: "object"
+          properties:
+            temperature:
+              type: "number"
+              description: "体温"
+              example: 36.6
+            temperature_status:
+              $ref: "#/components/schemas/HealthStatus"
+            hand:
+              type: "string"
+              example: ""
+              description: "手解释，暂时为空"
+            mouth:
+              type: "string"
+              example: ""
+              description: "口解释，暂时为空"
+            eye:
+              type: "string"
+              example: ""
+              description: "眼解释，暂时为空"
+            student:
+              $ref: "#/components/schemas/Student"
+            kindergarten:
+              $ref: "#/components/schemas/Kindergarten"
+    FindStudentMorningChecksResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              allOf:
+                - $ref: "#/components/schemas/Pagination"
+                - type: "object"
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/StudentMorningCheck"
+    StudentMedicalExamination:
+      allOf:
+        - $ref: "#/components/schemas/BaseModel"
+        - type: "object"
+          properties:
+            kindergarten_id:
+              type: "integer"
+              description: "幼儿园ID"
+              example: 1
+            student_id:
+              type: "integer"
+              description: "学生ID"
+              example: 1
+            height:
+              type: "integer"
+              description: "身高"
+              example: 173
+            height_status:
+              $ref: "#/components/schemas/HealthStatus"
+            height_updated_at:
+              type: "string"
+              description: "身高更新时间"
+              example: ""
+            weight:
+              type: "integer"
+              description: "体重"
+              example: 44.3
+            weight_status:
+              $ref: "#/components/schemas/HealthStatus"
+            weight_updated_at:
+              type: "string"
+              description: "体重更新时间"
+              example: ""
+            hemoglobin:
+              type: "integer"
+              description: "血红蛋白"
+              example: 111.1
+            hemoglobin_status:
+              $ref: "#/components/schemas/HealthStatus"
+            hemoglobin_updated_at:
+              type: "string"
+              description: "血红蛋白更新时间"
+              example: ""
+            sight_l:
+              type: "integer"
+              description: "左眼视力"
+              example: 4.5
+            sight_l_status:
+              $ref: "#/components/schemas/HealthStatus"
+            sight_r:
+              type: "integer"
+              description: "右眼视力"
+              example: 4.0
+            sight_r_status:
+              $ref: "#/components/schemas/HealthStatus"
+            sight_updated_at:
+              type: "string"
+              description: "身高更新时间"
+              example: ""
+            tooth:
+              type: "string"
+              description: "牙齿"
+              example: "无"
+            tooth_updated_at:
+              type: "string"
+              description: "身高更新时间"
+              example: ""
+            bmi:
+              type: "number"
+              description: "BMI指数"
+              example: 15.1
+            bmi_status:
+              type: "string"
+              description: "BMI评判"
+              example: "normal"
+    FindStudentMedicalExaminationsResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              allOf:
+                - $ref: "#/components/schemas/Pagination"
+                - type: "object"
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/StudentMedicalExamination"
+    LoadClassResult:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          example: "A班"
+          description: "班级名"
+        remark:
+          type: "string"
+          example: "备注信息"
+          description: "备注信息"
+    LoadClassesResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              type: "array"
+              items:
+                $ref: "#/components/schemas/LoadClassResult"
+    LoadTeacherResult:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          example: "A班"
+          description: "班级名"
+        phone:
+          type: "string"
+          example: "123123131"
+          description: "手机号"
+        gender:
+          type: "string"
+          example: "male"
+          description: "性别"
+          enum:
+            - "female"
+            - "male"
+        class_id:
+          type: "integer"
+          example: 3
+          description: "班级ID"
+        username:
+          type: "string"
+          example: "abcdefgh"
+          description: "用户名"
+        password:
+          type: "string"
+          example: "abclkjdlkadf"
+          description: "密码"
+        class:
+          $ref: "#/components/schemas/Class"
+    LoadStudentResult:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          example: "A班"
+          description: "班级名"
+        gender:
+          type: "string"
+          example: "male"
+          description: "性别"
+          enum:
+            - "female"
+            - "male"
+        class_id:
+          type: "integer"
+          example: 3
+          description: "班级ID"
+        device:
+          type: "string"
+          example: "AD:C3:52:11:E1"
+          description: "绑定设备"
+        remark:
+          type: "string"
+          example: ""
+          description: "备注信息"
+        class:
+          $ref: "#/components/schemas/Class"
+    LoadTeachersResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              type: "array"
+              items:
+                $ref: "#/components/schemas/LoadTeacherResult"
+    CreateClassLoadRequest:
+      type: "object"
+      properties:
+        classes:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/LoadClassResult"
+    CreateTeacherLoadRequest:
+      type: "object"
+      properties:
+        classes:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/LoadTeacherResult"
+    CreateStudentLoadRequest:
+      type: "object"
+      properties:
+        classes:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/LoadStudentResult"
+    LoadStudentsResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              type: "array"
+              items:
+                $ref: "#/components/schemas/LoadStudentResult"
+    HealthStatus:
+      type: "string"
+      enum:
+        - "high"
+        - "low"
+        - "normal"
+      example: "normal"

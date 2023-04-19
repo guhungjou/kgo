@@ -1,0 +1,29 @@
+- hosts: localhost
+  tasks:
+    - name: build kgo
+      command: "{{item}}"
+      with_items:
+        - git checkout master
+        - make
+      args:
+        chdir: "{{playbook_dir}}/.."
+- hosts: ykwell.cn
+  user: ubuntu
+  tasks:
+    - name: deploy kgo
+      copy:
+        src: "{{playbook_dir}}/../bin/kgo"
+        dest: /var/www/ykgk/kgo/
+        mode: a+x
+        owner: ubuntu
+        backup: true
+- hosts: ykwell.cn
+  user: ubuntu
+  become: true
+  become_user: root
+  become_method: sudo
+  tasks:
+    - name: restart kgo-2221
+      command: supervisorctl restart kgo-2221
+    - name: restart kgo-2222
+      command: supervisorctl restart kgo-2222

@@ -1,0 +1,1096 @@
+openapi: 3.0.2
+info:
+  title: "幼儿园平板端接口文档"
+  description: "幼儿园平板端接口文档"
+  version: "1.0.0"
+  contact:
+    name: "Wiky Lyu"
+    email: "wiiiky@yeah.net"
+
+tags:
+  - name: "学生"
+    description: "获取学生信息等"
+  - name: "晨检"
+    description: "上传晨检信息"
+  - name: "体检"
+    description: "上传体检信息"
+  - name: "体测"
+    description: "上传体测信息"
+  - name: "教师"
+    description: "教师登录等，登录后获取token，将token放在HTTP首部的X-Auth-Token中请求其他接口"
+
+servers:
+  - url: "https://kg.ykwell.cn/api/device"
+
+paths:
+  /student/{device}:
+    get:
+      tags:
+        - "学生"
+      summary: "查询学生信息"
+      description: "根据设备查询学生信息，如果学生不存在，则data为null"
+      operationId: "get.student"
+      parameters:
+        - in: "path"
+          name: "device"
+          description: "设备ID或者学生ID，由参数type控制"
+          schema:
+            type: "string"
+          required: true
+          example: "abcdefg"
+        - in: "query"
+          name: "type"
+          description: "参数类型，默认为device(设备号)，可选id(学生ID)"
+          schema:
+            type: "string"
+            enum: [device, id]
+          required: false
+          example: "device"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetStudentByDeviceResponse"
+  /student/medical/exam/height:
+    post:
+      tags:
+        - "体检"
+      summary: "上传身高"
+      description: "上传身高信息"
+      operationId: "post.student.medical.exam.height"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentMedicalExaminationHeightRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentMedicalExaminationResponse"
+  /student/medical/exam/weight:
+    post:
+      tags:
+        - "体检"
+      summary: "上传体重"
+      description: "上传体重信息"
+      operationId: "post.student.medical.exam.weight"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentMedicalExaminationWeightRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentMedicalExaminationResponse"
+  /student/medical/exam/hemoglobin:
+    post:
+      tags:
+        - "体检"
+      summary: "上传血红蛋白信息"
+      description: "上传血红蛋白信息"
+      operationId: "post.student.medical.exam.hemoglobin"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentMedicalExaminationHemoglobinRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentMedicalExaminationResponse"
+  /student/medical/exam/alt:
+    post:
+      tags:
+        - "体检"
+      summary: "上传谷丙转氨酶信息"
+      description: "上传谷丙转氨酶信息"
+      operationId: "post.student.medical.exam.alt"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentMedicalExaminationALTRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentMedicalExaminationResponse"
+  /student/medical/exam/sight:
+    post:
+      tags:
+        - "体检"
+      summary: "上传视力信息"
+      description: "上传视力信息"
+      operationId: "post.student.medical.exam.sight"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentMedicalExaminationSightRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentMedicalExaminationResponse"
+  /student/medical/exam/tooth:
+    post:
+      tags:
+        - "体检"
+      summary: "上传牙齿信息"
+      description: "上传牙齿信息"
+      operationId: "post.student.medical.exam.tooth"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentMedicalExaminationToothRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentMedicalExaminationResponse"
+  /student/morning/check:
+    post:
+      tags:
+        - "晨检"
+      summary: "上传晨检信息"
+      description: "上传晨检信息"
+      operationId: "post.student.morning.check"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentMorningCheckRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentMorningCheckResponse"
+  /student/{id}/medical/exam/status:
+    get:
+      tags:
+        - "体检"
+      summary: "获取体检状态"
+      description: "获取学生的当前体检状态，status为空表示没有测量，另外还有normal(正常)、high(偏高)、low(偏低)三个值"
+      operationId: "get.student.medical.exam.status"
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: 学生ID
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetKindergartenStudentMedicalExaminationTodayStatusResponse"
+  /student/fitness/test/height:
+    post:
+      tags:
+        - "体测"
+      summary: "上传身高"
+      description: "上传身高信息，单位CM"
+      operationId: "post.student.fitness.test.height"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentFitnessTestHeightRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentFitnessTestResponse"
+  /student/fitness/test/weight:
+    post:
+      tags:
+        - "体测"
+      summary: "上传体重"
+      description: "上传体重信息，单位KG"
+      operationId: "post.student.fitness.test.weight"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentFitnessTestWeightRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentFitnessTestResponse"
+  /student/fitness/test/shuttle_run_10:
+    post:
+      tags:
+        - "体测"
+      summary: "上传十米折返跑"
+      description: "上传十米折返跑信息，单位秒"
+      operationId: "post.student.fitness.test.shuttle_run_10"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentFitnessTestShuttleRun10Request"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentFitnessTestResponse"
+  /student/fitness/test/standing_long_jump:
+    post:
+      tags:
+        - "体测"
+      summary: "立定跳远"
+      description: "立定跳远"
+      operationId: "post.student.fitness.test.standing_long_jump"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentFitnessTestStandingLongJumpRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentFitnessTestResponse"
+  /student/fitness/test/baseball_throw:
+    post:
+      tags:
+        - "体测"
+      summary: "网球掷远"
+      description: "网球掷远"
+      operationId: "post.student.fitness.test.baseball_throw"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentFitnessTestBaseballThrowRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentFitnessTestResponse"
+  /student/fitness/test/bunny_hopping:
+    post:
+      tags:
+        - "体测"
+      summary: "双脚连续跳"
+      description: "双脚连续跳"
+      operationId: "post.student.fitness.test.bunny_hopping"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentFitnessTestBunnyHoppingRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentFitnessTestResponse"
+  /student/fitness/test/sit_and_reach:
+    post:
+      tags:
+        - "体测"
+      summary: "坐位体前屈"
+      description: "坐位体前屈"
+      operationId: "post.student.fitness.test.sit_and_reach"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentFitnessTestSitAndReachRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentFitnessTestResponse"
+  /student/fitness/test/balance_beam:
+    post:
+      tags:
+        - "体测"
+      summary: "走平衡木"
+      description: "走平衡木"
+      operationId: "post.student.fitness.test.balance_beam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStudentFitnessTestBalanceBeamRequest"
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateStudentFitnessTestResponse"
+  /student/{id}/fitness/test/status:
+    get:
+      tags:
+        - "体测"
+      summary: "获取当前体测状态"
+      description: "获取当前体测状态，status为空表示没有测量，另外还有normal(正常)、high(偏高)、low(偏低)三个值"
+      operationId: "get.student.fitness.test.status"
+      parameters:
+        - in: path
+          name: id
+          description: 学生ID
+          schema:
+            type: number
+          required: true
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetKindergartenStudentFitnessTestTodayStatusResponse"
+  /teacher/login:
+    put:
+      tags:
+        - "教师"
+      summary: "教师登录"
+      description: "教师登录，当前只允许园长账号登录"
+      operationId: "put.teacher.login"
+      # security:
+      #   - apiAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeacherLoginRequest"
+      responses:
+        "200":
+          description: "调用成功，20001账号不存在，20002密码错误"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeacherLoginResponse"
+  /teacher/classes:
+    get:
+      tags:
+        - "教师"
+      summary: "获取班级列表"
+      description: "获取班级列表，不分页，不需要参数"
+      operationId: "get.teacher.classes"
+      security:
+        - apiAuth: []
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FindTeacherClassesResponse"
+  /teacher/class/{id}/students:
+    get:
+      tags:
+        - "教师"
+      summary: "获取学生列表"
+      description: "获取某个班级的学生列表"
+      operationId: "get.teacher.class.students"
+      security:
+        - apiAuth: []
+      parameters:
+        - in: path
+          name: id
+          description: 班级ID
+          schema:
+            type: number
+          required: true
+      responses:
+        "200":
+          description: "调用成功"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FindTeacherClassStudentsResponse"
+components:
+  securitySchemes:
+    apiAuth:
+      type: apiKey
+      in: header
+      name: X-Auth-Token
+  schemas:
+    BaseResponse:
+      type: "object"
+      properties:
+        status:
+          type: "number"
+          description: "状态，0表示成功，非0表示出错，具体出错根据接口而异"
+          example: 0
+        data:
+          type: "object"
+    BaseModel:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+          description: "主键ID"
+          example: 1
+        updated_at:
+          type: "string"
+          format: "date-time"
+          example: "2020-10-20 10:18:43.91541+08"
+          description: "更新时间"
+        created_at:
+          type: "string"
+          format: "date-time"
+          example: "2020-10-20 10:18:43.91541+08"
+          description: "创建时间"
+    Class:
+      allOf:
+        - $ref: "#/components/schemas/BaseModel"
+        - type: "object"
+          properties:
+            name:
+              type: "string"
+              example: "A班"
+              description: "班级名"
+            remark:
+              type: "string"
+              example: "备注信息"
+            number_of_student:
+              type: "integer"
+              example: 10
+              description: "学生数"
+            number_of_teacher:
+              type: "integer"
+              example: 2
+              description: "老师数"
+            kindergarten:
+              $ref: "#/components/schemas/Kindergarten"
+    Teacher:
+      allOf:
+        - $ref: "#/components/schemas/BaseModel"
+        - type: "object"
+          properties:
+            username:
+              type: "string"
+              example: "test111"
+            name:
+              type: "string"
+              example: "测试帐号"
+            phone:
+              type: "string"
+              example: ""
+              description: "手机号"
+            role:
+              type: "string"
+              example: "manager"
+              enum:
+                - "manager"
+                - "teacher"
+              description: "角色"
+            gender:
+              type: "string"
+              example: "female"
+              enum:
+                - "male"
+                - "female"
+              description: "性别"
+            kindergarten:
+              $ref: "#/components/schemas/Kindergarten"
+            class:
+              $ref: "#/components/schemas/Class"
+    Kindergarten:
+      allOf:
+        - $ref: "#/components/schemas/BaseModel"
+        - type: "object"
+          properties:
+            name:
+              type: "string"
+              example: "测试幼儿园"
+              description: "幼儿园名"
+            remark:
+              type: "string"
+              example: "这是一个测试幼儿园"
+              description: "幼儿园备注"
+    Pagination:
+      type: "object"
+      properties:
+        page:
+          type: "integer"
+          example: 1
+        page_size:
+          type: "integer"
+          example: 10
+        total:
+          type: "integer"
+          example: 100
+    Student:
+      allOf:
+        - $ref: "#/components/schemas/BaseModel"
+        - type: "object"
+          properties:
+            name:
+              type: "string"
+              example: "小明"
+              description: "学生名"
+            remark:
+              type: "string"
+              example: ""
+              description: "备注"
+            gender:
+              type: "string"
+              example: "female"
+              description: "性别"
+            device:
+              type: "string"
+              example: "AC-DF-GH-DS-AA"
+              description: "设备ID"
+            kindergarten:
+              $ref: "#/components/schemas/Kindergarten"
+            class:
+              $ref: "#/components/schemas/Class"
+    GetStudentByDeviceResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              $ref: "#/components/schemas/Student"
+    StudentMedicalExamination:
+      allOf:
+        - $ref: "#/components/schemas/BaseModel"
+        - type: "object"
+          properties:
+            kindergarten_id:
+              type: "integer"
+              description: "幼儿园ID"
+              example: 1
+            student_id:
+              type: "integer"
+              description: "学生ID"
+              example: 1
+            height:
+              type: "integer"
+              description: "身高"
+              example: 173
+            height_status:
+              $ref: "#/components/schemas/HealthStatus"
+            weight:
+              type: "integer"
+              description: "体重"
+              example: 44.3
+            weight_status:
+              $ref: "#/components/schemas/HealthStatus"
+            hemoglobin:
+              type: "integer"
+              description: "血红蛋白"
+              example: 111.1
+            hemoglobin_status:
+              $ref: "#/components/schemas/HealthStatus"
+            hemoglobin_remark:
+              type: "string"
+              description: "血红蛋白备注"
+              example: ""
+            alt:
+              type: "integer"
+              description: "谷丙转氨酶"
+              example: 12
+            alt_status:
+              $ref: "#/components/schemas/HealthStatus"
+            alt_remark:
+              type: "string"
+              description: "谷丙转氨酶备注"
+              example: ""
+            sight_l_s:
+              type: "string"
+              description: "左眼球镜度"
+              example: "+0D"
+            sight_l_c:
+              type: "string"
+              description: "左眼柱镜度"
+              example: "-0.5D"
+            sight_l_s_status:
+              $ref: "#/components/schemas/HealthStatus"
+            sight_l_c_status:
+              $ref: "#/components/schemas/HealthStatus"
+            sight_r_s:
+              type: "string"
+              description: "右眼球镜度"
+              example: "+0.1D"
+            sight_r_c:
+              type: "string"
+              description: "右眼柱镜度"
+              example: "-0.3D"
+            sight_r_s_status:
+              $ref: "#/components/schemas/HealthStatus"
+            sight_r_c_status:
+              $ref: "#/components/schemas/HealthStatus"
+            # sight_l:
+            #   type: "integer"
+            #   description: "左眼视力"
+            #   example: 4.5
+            # sight_l_remark:
+            #   type: "string"
+            #   description: "左眼备注"
+            #   example: ""
+            # sight_l_status:
+            #   $ref: "#/components/schemas/HealthStatus"
+            # sight_r:
+            #   type: "integer"
+            #   description: "右眼视力"
+            #   example: 4.0
+            # sight_r_remark:
+            #   type: "string"
+            #   description: "右眼备注"
+            #   example: +-0.1
+            # sight_r_status:
+            #   $ref: "#/components/schemas/HealthStatus"
+            tooth_count:
+              type: "integer"
+              description: "牙齿数"
+              example: 20
+            tooth_caries_count:
+              type: "integer"
+              description: "蛀牙数"
+              example: 2
+            tooth_remark:
+              type: "string"
+              description: "牙齿备注"
+              example: ""
+            bmi:
+              type: "number"
+              description: "BMI指数"
+              example: 15.1
+            bmi_status:
+              type: "string"
+              description: "BMI评判"
+              example: "normal"
+    CreateStudentMedicalExaminationResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              $ref: "#/components/schemas/StudentMedicalExamination"
+    CreateStudentMedicalExaminationHeightRequest:
+      type: "object"
+      properties:
+        student_id:
+          type: "integer"
+          description: "学生ID"
+          example: 1
+        height:
+          type: "integer"
+          description: "身高，单位CM"
+          example: 155
+    CreateStudentMedicalExaminationWeightRequest:
+      type: "object"
+      properties:
+        student_id:
+          type: "integer"
+          description: "学生ID"
+          example: 1
+        weight:
+          type: "integer"
+          description: "体重，单位KG"
+          example: 40
+    CreateStudentMedicalExaminationHemoglobinRequest:
+      type: "object"
+      properties:
+        student_id:
+          type: "integer"
+          description: "学生ID"
+          example: 1
+        hemoglobin:
+          type: "integer"
+          description: "血红蛋白"
+          example: 66.63
+        remark:
+          type: "string"
+          description: "备注信息"
+          example: ""
+    CreateStudentMedicalExaminationALTRequest:
+      type: "object"
+      properties:
+        student_id:
+          type: "integer"
+          description: "学生ID"
+          example: 1
+        alt:
+          type: "integer"
+          description: "谷丙转氨酶"
+          example: 11
+        remark:
+          type: "string"
+          description: "备注信息"
+          example: "<40"
+    CreateStudentMedicalExaminationSightRequest:
+      type: "object"
+      properties:
+        student_id:
+          type: "integer"
+          description: "学生ID"
+          example: 1
+        sight_l_s:
+          type: "string"
+          description: "左眼球镜度"
+          example: "-0.5D"
+        sight_l_c:
+          type: "string"
+          description: "左眼柱镜度"
+          example: "-0.2D"
+        sight_l_remark:
+          type: "string"
+          description: "左眼备注"
+          example: "+-0.5"
+        sight_r_s:
+          type: "string"
+          description: "右眼球镜度"
+          example: "-0.5D"
+        sight_r_c:
+          type: "string"
+          description: "右眼柱镜度"
+          example: "-0.2D"
+        sight_r_remark:
+          type: "string"
+          description: "右眼备注"
+          example: "+-0.1"
+    CreateStudentMedicalExaminationToothRequest:
+      type: "object"
+      properties:
+        student_id:
+          type: "integer"
+          description: "学生ID"
+          example: 1
+        tooth:
+          type: "integer"
+          description: "牙齿总数"
+          example: 20
+        caries:
+          type: "integer"
+          description: "蛀牙数"
+          example: 1
+        remark:
+          type: "string"
+          description: "备注信息"
+          example: ""
+    CreateStudentMorningCheckRequest:
+      type: "object"
+      properties:
+        student_id:
+          type: "integer"
+          description: "学生ID"
+          example: 1
+        temperature:
+          type: "integer"
+          description: "体温，单位摄氏度"
+          example: 36.6
+        hand:
+          type: "string"
+          description: "手"
+          example: "正常"
+        mouth:
+          type: "string"
+          description: "口"
+          example: ""
+        eye:
+          type: "string"
+          description: "眼"
+          example: ""
+    StudentMorningCheck:
+      allOf:
+        - $ref: "#/components/schemas/BaseModel"
+        - type: "object"
+          properties:
+            student_id:
+              type: "integer"
+              description: "学生ID"
+              example: 1
+            temperature:
+              type: "integer"
+              description: "体温"
+              example: 36.6
+            temperature_status:
+              $ref: "#/components/schemas/HealthStatus"
+            hand:
+              type: "string"
+              description: "手"
+              example: "正常"
+            mouth:
+              type: "string"
+              description: "口"
+              example: ""
+            eye:
+              type: "string"
+              description: "眼"
+              example: ""
+    CreateStudentMorningCheckResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              $ref: "#/components/schemas/StudentMorningCheck"
+    HealthStatus:
+      type: "string"
+      enum:
+        - "high"
+        - "low"
+        - "normal"
+      example: "normal"
+    GetKindergartenStudentMedicalExaminationTodayStatusResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              $ref: "#/components/schemas/StudentMedicalExamination"
+    CreateStudentFitnessTestShuttleRun10Request:
+      type: object
+      properties:
+        student_id:
+          type: number
+          description: 学生ID
+          example: 1
+        shuttle_run_10:
+          type: number
+          description: 十米折返跑(秒)
+          example: 5.5
+    StudentFitnessTest:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/BaseModel"
+        - type: "object"
+          properties:
+            shuttle_run_10:
+              type: number
+              description: 十米折返跑
+              example: 5.5
+            shuttle_run_10_score:
+              type: number
+              description: 十米折返跑的评分
+              example: 3
+            standing_long_jump:
+              type: number
+              description: 立定跳远
+              example: 3.3
+            standing_long_jump_score:
+              type: number
+              description: 立定跳远评分
+              example: 4
+            baseball_throw:
+              type: number
+              description: 网球掷远
+              example: 1.1
+            baseball_throw_score:
+              type: number
+              description: 网球掷远评分
+              example: 1
+            bunny_hopping:
+              type: number
+              description: 双脚连续跳
+              example: 2.2
+            bunny_hopping_score:
+              type: number
+              description: 双脚连续跳评分
+              example: 2
+            sit_and_reach:
+              type: number
+              description: 坐位体前屈
+              example: 1.1
+            sit_and_reach_score:
+              type: number
+              description: 坐位体前屈评分
+              example: 1
+            balance_beam:
+              type: number
+              description: 走平衡木
+              example: 1
+            balance_beam_score:
+              type: number
+              description: 走平衡木评分
+              example: 1
+            total_score:
+              type: number
+              description: 总分
+              example: 20
+    CreateStudentFitnessTestResponse:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              $ref: "#/components/schemas/StudentFitnessTest"
+    CreateStudentFitnessTestStandingLongJumpRequest:
+      type: object
+      properties:
+        student_id:
+          type: number
+          description: 学生ID
+          example: 1
+        standing_long_jump:
+          type: number
+          description: 立定跳远
+          example: 5.5
+    CreateStudentFitnessTestBaseballThrowRequest:
+      type: object
+      properties:
+        student_id:
+          type: number
+          description: 学生ID
+          example: 1
+        baseball_throw:
+          type: number
+          description: 网球掷远
+          example: 5.5
+    CreateStudentFitnessTestBunnyHoppingRequest:
+      type: object
+      properties:
+        student_id:
+          type: number
+          description: 学生ID
+          example: 1
+        bunny_hopping:
+          type: number
+          description: 双脚连续跳
+          example: 5.5
+    CreateStudentFitnessTestSitAndReachRequest:
+      type: object
+      properties:
+        student_id:
+          type: number
+          description: 学生ID
+          example: 1
+        sit_and_reach:
+          type: number
+          description: 坐位体前屈
+          example: 5.5
+    CreateStudentFitnessTestBalanceBeamRequest:
+      type: object
+      properties:
+        student_id:
+          type: number
+          description: 学生ID
+          example: 1
+        balance_beam:
+          type: number
+          description: 走平衡木
+          example: 5.5
+    CreateStudentFitnessTestHeightRequest:
+      type: object
+      properties:
+        student_id:
+          type: number
+          description: 学生ID
+          example: 1
+        height:
+          type: number
+          description: 身高
+          example: 133
+    CreateStudentFitnessTestWeightRequest:
+      type: object
+      properties:
+        student_id:
+          type: number
+          description: 学生ID
+          example: 1
+        height:
+          type: number
+          description: 体重
+          example: 20.5
+    GetKindergartenStudentFitnessTestTodayStatusResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              $ref: "#/components/schemas/StudentFitnessTest"
+    TeacherLoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          description: "用户名"
+          example: "test111"
+        password:
+          type: string
+          description: "密码"
+          example: "12345678"
+    TeacherLoginResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              allOf:
+                - $ref: "#/components/schemas/Teacher"
+                - type: "object"
+                  properties:
+                    token:
+                      type: string
+                      description: "登录凭证"
+                      example: "03a3852f-43f8-4067-ae40-908887845d29"
+    FindTeacherClassesResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/Class"
+    FindTeacherClassStudentsResponse:
+      allOf:
+        - $ref: "#/components/schemas/BaseResponse"
+        - type: "object"
+          properties:
+            data:
+              type: array
+              items:
+                $ref: "#/components/schemas/Student"
